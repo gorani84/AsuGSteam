@@ -73,7 +73,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
 
   // Send data method
   void sendData() async {
-    final url = Uri.parse('http://10.130.1.143:5000/send-data');
+    final url = Uri.parse('https://asugs-flask-backend.onrender.com/send-data');
     final body = jsonEncode({
       'component_id': componentIDController.text,
       'component_type': componentTypeController.text,
@@ -92,10 +92,41 @@ class _DataEntryPageState extends State<DataEntryPage> {
         body: body,
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print('Data sent successfully!');
       } else {
         print('Failed to send data. Error: ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+  }
+
+  //get data from table by referencing component id
+  Future<void> fetchDataByComponentId() async {
+    // Get the component ID from the text field
+    final componentId = componentIDController.text;
+    final url = Uri.parse('https://asugs-flask-backend.onrender.com/get-data/$componentId');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('Data fetched successfully: $data');
+
+        // Populate the text fields with fetched data
+        setState(() {
+          componentTypeController.text = data['component_type'] ?? '';
+          electricalSpecController.text = data['electrical_specifications'] ?? '';
+          connectionPointsController.text = data['connection_points'] ?? '';
+          geoLocationController.text = data['geolocation'] ?? '';
+          installationDateController.text = data['installation_date'] ?? '';
+          operationStatusController.text = data['operation_status'] ?? '';
+          derController.text = data['der'] ?? '';
+        });
+      } else {
+        print('Failed to fetch data. Error: ${response.body}');
       }
     } catch (e) {
       print('Error occurred: $e');
@@ -194,6 +225,11 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   _buildSendButton(),
 
                   const SizedBox(height: 30),
+
+                  //get data button
+                  _buildFetchButton(),
+
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -260,7 +296,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
         if (pickedDate != null) {
           // Format the selected date as MM-DD-YYYY
           String formattedDate =
-              "${pickedDate.month}-${pickedDate.day}-${pickedDate.year}";
+              "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
           setState(() {
             installationDateController.text =
                 formattedDate; // Set the selected date in the controller
@@ -270,7 +306,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
       child: AbsorbPointer(
         child: _buildTextField(
           controller: installationDateController,
-          hintText: 'Installation Date (MM-DD-YYYY)',
+          hintText: 'Installation Date (YYYY-MM-DD)',
           keyboardType: TextInputType.datetime, // Set keyboard type to date
         ),
       ),
@@ -290,6 +326,25 @@ class _DataEntryPageState extends State<DataEntryPage> {
       ),
       child: const Text(
         'Send Data',
+        style: TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+  Widget _buildFetchButton() {
+    return ElevatedButton(
+      onPressed: fetchDataByComponentId,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+        backgroundColor: kSecondaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: const Text(
+        'Get Data',
         style: TextStyle(
           fontSize: 18,
           color: Colors.white,
