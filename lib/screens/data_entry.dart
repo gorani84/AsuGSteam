@@ -1,9 +1,39 @@
+import 'package:asugs/components/electric_components/input/capacitor_banks.dart';
+import 'package:asugs/components/electric_components/input/circuitBreakers.dart';
+import 'package:asugs/components/electric_components/input/energyMeters.dart';
+import 'package:asugs/components/electric_components/input/fuses.dart';
+import 'package:asugs/components/electric_components/input/generator.dart';
+import 'package:asugs/components/electric_components/input/inverters.dart';
+import 'package:asugs/components/electric_components/input/load.dart';
+import 'package:asugs/components/electric_components/input/reactor.dart';
+import 'package:asugs/components/electric_components/input/shuntElements.dart';
+import 'package:asugs/components/electric_components/input/storageDevices.dart';
+import 'package:asugs/components/electric_components/input/switches.dart';
+import 'package:asugs/components/electric_components/input/transformers.dart';
+import 'package:asugs/components/electric_components/input/voltageRegulators.dart';
+import 'package:asugs/components/ui/input.dart';
 import 'package:asugs/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+
+enum ComponentType {
+  transformers,
+  capacitorBanks,
+  generator,
+  load,
+  reactor,
+  voltageRegulators,
+  switches,
+  fuses,
+  circuitBreakers,
+  energyMeters,
+  storageDevices,
+  inverters,
+  shuntElements
+}
 
 class DataEntryPage extends StatefulWidget {
   const DataEntryPage({super.key});
@@ -15,56 +45,15 @@ class DataEntryPage extends StatefulWidget {
 class _DataEntryPageState extends State<DataEntryPage> {
   // Text editing controllers
   final componentIDController = TextEditingController();
-  final componentTypeController = TextEditingController();
-  final geoLocationController = TextEditingController(); // Geolocation controller
+  final electricalSpecController = TextEditingController();
+  final connectionPointsController = TextEditingController();
+  final geoLocationController =
+      TextEditingController(); // Geolocation controller
   final installationDateController = TextEditingController();
+  final operationStatusController = TextEditingController();
+  final derController = TextEditingController(); // Optional DER input
 
-  // Dynamic parameter controllers
-  final Map<String, TextEditingController> parameterControllers = {};
-
-  String selectedComponentType = '';
-  List<String> parameterFields = [];
-
-  // Define Parameter fields for each component type
-  final Map<String, List<String>> componentParameters = {
-    'Transformer' : [
-      'Conn1', // connecction type for winding 1
-      'Conn2', // connection type for winding 2
-      'Kv1', //kV rating for winding 1
-      'Kv2', // kV rating for winding 2
-      'Kva1', // kVA rating for winding 1
-      'Kva2', // kVA rating for winding 2
-      'R1',
-      'R2',
-    ],
-    //Add other component types here
-    'Line' : [
-      'Length',
-      'Line Code'
-    ],
-    //Add more component types here like this until all component types needed are added in this dynamic parameter editor
-  };
-
-  @override
- void dispose() {
-  componentTypeController.dispose();
-  componentIDController.dispose();
-  geoLocationController.dispose();
-  installationDateController.dispose();
-  parameterControllers.forEach((key, controller) => controller.dispose());
-  super.dispose();
- }
-
-void updateParameterFields(String componentType) {
-  setState(() {
-    selectedComponentType = componentType;
-    parameterFields = componentParameters[componentType] ?? [];
-    parameterControllers.clear();
-    for (var field in parameterFields) {
-      parameterControllers[field] = TextEditingController();
-    }
-  });
-}
+  ComponentType selectedComponentType = ComponentType.transformers;
 
   @override
   void initState() {
@@ -79,12 +68,6 @@ void updateParameterFields(String componentType) {
           componentIDController.text = args['qr']!;
         });
       }
-    });
-
-    // Add listener to the componentTypeController to update parameter fields
-    componentTypeController.addListener(() {
-      final componentType = componentTypeController.text;
-      updateParameterFields(componentType); // Update parameter fields when the text changes
     });
   }
 
@@ -120,64 +103,71 @@ void updateParameterFields(String componentType) {
   }
 
   // Send data method
-  Future<void> sendData() async {
+  void sendData() async {
+    final url = Uri.parse('https://asugs-flask-backend.onrender.com/send-data');
+    final body = jsonEncode({
+      'component_id': componentIDController.text,
+      'component_type': selectedComponentType?.name,
+      'electrical_specifications': electricalSpecController.text,
+      'connection_points': connectionPointsController.text,
+      'geolocation': geoLocationController.text,
+      'installation_date': installationDateController.text,
+      'operation_status': operationStatusController.text,
+      'der': derController.text,
+    });
+
     try {
-      final parameters = parameterControllers.map((key, controller) => MapEntry(key, controller.text));
-
-      final geoLocation = geoLocationController.text.split(',').map((e) => double.tryParse(e.trim()) ?? 0.0).toList();
-
-      final payload = {
-        'component_type': selectedComponentType,
-        'component_id': componentIDController.text,
-        'parameters': parameters,
-        'geolocation': geoLocation,
-      };
-
       final response = await http.post(
-        Uri.parse('https://asugs-flask-backend.onrender.com/modify_component'),
+        url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(payload),
+        body: body,
       );
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Component updated successfully!')));
+      if (response.statusCode == 201) {
+        print('Data sent successfully!');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+        print('Failed to send data. Error: ${response.body}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
-    }    
+      print('Error occurred: $e');
+    }
   }
 
   //get data from table by referencing component id
-Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String componentType) async {
-  final String baseUrl = "https://asugs-flask-backend.onrender.com/get_data";
-  final Uri url = Uri.parse("$baseUrl/$componentId?component_type=$componentType");
+  Future<void> fetchDataByComponentId() async {
+    // Get the component ID from the text field
+    final componentId = componentIDController.text;
+    final url = Uri.parse(
+        'https://asugs-flask-backend.onrender.com/get-data/$componentId');
 
-  try {
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
 
-    print("Response status: ${response.statusCode}");
-    print("Response body: ${response.body}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('Data fetched successfully: $data');
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data is Map<String, dynamic>) {
-        return data;
+        // Populate the text fields with fetched data
+        setState(() {
+          selectedComponentType = ComponentType.values.firstWhere(
+            (e) => e.name == data['component_type'],
+            orElse: () => ComponentType.transformers,
+          );
+          electricalSpecController.text =
+              data['electrical_specifications'] ?? '';
+          connectionPointsController.text = data['connection_points'] ?? '';
+          geoLocationController.text = data['geolocation'] ?? '';
+          installationDateController.text = data['installation_date'] ?? '';
+          operationStatusController.text = data['operation_status'] ?? '';
+          derController.text = data['der'] ?? '';
+        });
       } else {
-        throw Exception("Invalid response format");
+        print('Failed to fetch data. Error: ${response.body}');
       }
-    } else if (response.statusCode == 404) {
-      throw Exception('Component not found.');
-    } else {
-      throw Exception('Failed to load data: ${response.statusCode}');
+    } catch (e) {
+      print('Error occurred: $e');
     }
-  } catch (e) {
-    print("Error: $e");
-    throw Exception('An error occurred: $e');
   }
-}
-
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
@@ -212,26 +202,37 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                     style: TextStyle(fontSize: 28, color: Colors.white),
                   ),
                   const SizedBox(height: 40),
-                  // Component Type field
-                  _buildTextField(
-                    controller: componentTypeController,
-                    hintText: 'Component Type',
-                    enabled: !(args != null && args['qr'] != null),
-                  ),
-                  const SizedBox(height: 30),
-
                   // Component ID field
-                  _buildTextField(
+                  Input(
                     controller: componentIDController,
                     hintText: 'Component ID',
+                    enabled: true,
                   ),
                   const SizedBox(height: 30),
 
-                  // Geolocation field 
-                  _buildTextField(
+                  // Component Type field
+                  _buildDropdownField(),
+                  const SizedBox(height: 30),
+
+                  // Electrical Specifications field
+                  Input(
+                    controller: electricalSpecController,
+                    hintText: 'Electrical Specifications',
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Connection Points field
+                  Input(
+                    controller: connectionPointsController,
+                    hintText: 'Connection Points',
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Geolocation field (read-only)
+                  Input(
                     controller: geoLocationController,
                     hintText: 'Geo Location (Latitude, Longitude)',
-                    enabled: true, 
+                    enabled: true, // Read-only
                   ),
                   const SizedBox(height: 30),
 
@@ -239,21 +240,23 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                   _buildInstallationDateField(),
                   const SizedBox(height: 30),
 
-                  // Render dynamic parameter fields for selected component type
-                  if (parameterFields.isNotEmpty)
-                  ...parameterFields.map((field) {
-                    return Column(
-                      children: [
-                        _buildTextField(
-                          controller: parameterControllers[field]!, 
-                          hintText: field,
-                          ),
-                          const SizedBox(height: 30), // Add spacing between dynamic fields
-                      ],
-                    );
-                  }).toList(),
+                  // Operation Status field
+                  Input(
+                    controller: operationStatusController,
+                    hintText: 'Operation Status (active/inactive/maintenance)',
+                  ),
                   const SizedBox(height: 30),
-                  
+
+                  // Optional DER field
+                  Input(
+                    controller: derController,
+                    hintText: 'Distributed Energy Resource (Optional)',
+                  ),
+                  const SizedBox(height: 30),
+
+                  // component input types
+                  _componentInputWidget(),
+
                   // Send data button
                   _buildSendButton(),
 
@@ -272,28 +275,59 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
     );
   }
 
-  // Custom TextField builder
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    bool enabled = true,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      enabled: enabled,
+  Widget _componentInputWidget() {
+    switch (selectedComponentType) {
+      case ComponentType.transformers:
+        return TransformersForm();
+      case ComponentType.capacitorBanks:
+        return CapacitorBanksForm();
+      case ComponentType.generator:
+        return GeneratorForm();
+      case ComponentType.load:
+        return LoadForm();
+      case ComponentType.reactor:
+        return ReactorForm();
+      case ComponentType.voltageRegulators:
+        return VoltageRegulatorsForm();
+      case ComponentType.switches:
+        return SwitchesForm();
+      case ComponentType.fuses:
+        return FusesForm();
+      case ComponentType.circuitBreakers:
+        return CircuitBreakerForm();
+      case ComponentType.energyMeters:
+        return EnergyMeterForm();
+      case ComponentType.storageDevices:
+        return StorageDevicesForm();
+      case ComponentType.inverters:
+        return InvertersForm();
+      case ComponentType.shuntElements:
+        return ShuntElementForm();
+      default:
+        return Container();
+    }
+  }
+
+  Widget _buildDropdownField() {
+    return DropdownButtonFormField<ComponentType>(
+      value: selectedComponentType,
+      hint: const Text('Component Type'),
+      items: ComponentType.values.map((ComponentType type) {
+        return DropdownMenuItem<ComponentType>(
+          value: type,
+          child: Text(type.name),
+        );
+      }).toList(),
+      onChanged: (ComponentType? value) {
+        setState(() {
+          if (value != null) {
+            selectedComponentType = value;
+          }
+        });
+      },
       decoration: InputDecoration(
-        hintText: hintText,
         filled: true,
-        fillColor: enabled
-            ? Colors.grey[100]
-            : Colors.grey[200], // Different color when disabled
-        hintStyle: TextStyle(
-          color: enabled
-              ? Colors.black45
-              : Colors.black26, // Lighter hint color when disabled
-        ),
+        fillColor: Colors.grey[100],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none, // No border by default
@@ -303,14 +337,6 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
           borderSide: BorderSide(
               color: Colors.grey, width: 1.0), // Customize enabled border
         ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: Colors.grey, width: 1.0), // Customize disabled border
-        ),
-      ),
-      style: TextStyle(
-        color: Colors.black, // Text color stays black even when disabled
       ),
     );
   }
@@ -337,7 +363,7 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
         }
       },
       child: AbsorbPointer(
-        child: _buildTextField(
+        child: Input(
           controller: installationDateController,
           hintText: 'Installation Date (YYYY-MM-DD)',
           keyboardType: TextInputType.datetime, // Set keyboard type to date
@@ -366,60 +392,24 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
       ),
     );
   }
-Widget _buildFetchButton() {
-  return ElevatedButton(
-    onPressed: () async {
-      final componentId = componentIDController.text.trim();
-      final componentType = componentTypeController.text.trim();
 
-      if (componentId.isEmpty || componentType.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please enter Component ID and Type.")),
-        );
-        return;
-      }
-
-      try {
-        // Fetch data from the server
-        final data = await fetchDataByComponentId(componentId, componentType);
-
-        if (data.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("No data found for the provided Component ID and Type.")),
-          );
-          return;
-        }
-
-        // Update parameter controllers with the fetched data
-        data.forEach((key, value) {
-          if (parameterControllers.containsKey(key)) {
-            parameterControllers[key]?.text = value.toString();
-          }
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Data fetched successfully!")),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e")),
-        );
-      }
-    },
-    style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-      backgroundColor: kSecondaryColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildFetchButton() {
+    return ElevatedButton(
+      onPressed: fetchDataByComponentId,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+        backgroundColor: kSecondaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
-    ),
-    child: const Text(
-      'Get Data',
-      style: TextStyle(
-        fontSize: 18,
-        color: Colors.white,
+      child: const Text(
+        'Get Data',
+        style: TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
