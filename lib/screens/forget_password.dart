@@ -115,17 +115,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   _isLoading = true;
                                   _errorMessage = null;
                                   _successMessage =
-                                  null; // Reset success message
+                                      null; // Reset success message
                                 });
 
                                 String email = emailController.text.trim();
                                 await AuthService().resetPassword(
                                   email,
-                                      (err) {
+                                  (err) {
                                     setState(() {
                                       _errorMessage = err;
                                       _successMessage =
-                                      null; // Reset success message on error
+                                          null; // Reset success message on error
                                     });
                                   },
                                 );
@@ -133,24 +133,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 // Show success message
                                 setState(() {
                                   _successMessage =
-                                  'Check your email to reset your password!';
+                                      'Check your email to reset your password!';
                                   _isLoading = false;
                                 });
                               }
                             },
                             child: _isLoading
                                 ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
                                 : const Text(
-                              'Send Reset Link',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                                    'Send Reset Link',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                           ),
                         ),
                       ],

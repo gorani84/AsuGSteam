@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () {
                                   setState(() {
                                     _isPasswordVisible =
-                                    !_isPasswordVisible; // Toggle visibility
+                                        !_isPasswordVisible; // Toggle visibility
                                   });
                                 },
                               ),
@@ -164,14 +164,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                                 String email = emailController.text.trim();
                                 String password =
-                                passwordController.text.trim();
+                                    passwordController.text.trim();
                                 User? user = await AuthService()
                                     .signInWithEmailAndPassword(email, password,
                                         (err) {
-                                      setState(() {
-                                        _errorMessage = err;
-                                      });
-                                    });
+                                  setState(() {
+                                    _errorMessage = err;
+                                  });
+                                });
                                 if (user != null) {
                                   Navigator.pushNamed(context, '/');
                                 }
@@ -182,17 +182,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: _isLoading
                                 ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
                                 : const Text(
-                              'Login',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                                    'Login',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                           ),
                         ),
                       ],

@@ -1,9 +1,39 @@
+import 'package:asugs/components/electric_components/input/capacitor_banks.dart';
+import 'package:asugs/components/electric_components/input/circuitBreakers.dart';
+import 'package:asugs/components/electric_components/input/energyMeters.dart';
+import 'package:asugs/components/electric_components/input/fuses.dart';
+import 'package:asugs/components/electric_components/input/generator.dart';
+import 'package:asugs/components/electric_components/input/inverters.dart';
+import 'package:asugs/components/electric_components/input/load.dart';
+import 'package:asugs/components/electric_components/input/reactor.dart';
+import 'package:asugs/components/electric_components/input/shuntElements.dart';
+import 'package:asugs/components/electric_components/input/storageDevices.dart';
+import 'package:asugs/components/electric_components/input/switches.dart';
+import 'package:asugs/components/electric_components/input/transformers.dart';
+import 'package:asugs/components/electric_components/input/voltageRegulators.dart';
+import 'package:asugs/components/ui/input.dart';
 import 'package:asugs/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+
+enum ComponentType {
+  transformers,
+  capacitorBanks,
+  generator,
+  load,
+  reactor,
+  voltageRegulators,
+  switches,
+  fuses,
+  circuitBreakers,
+  energyMeters,
+  storageDevices,
+  inverters,
+  shuntElements
+}
 
 class DataEntryPage extends StatefulWidget {
   const DataEntryPage({super.key});
@@ -15,14 +45,15 @@ class DataEntryPage extends StatefulWidget {
 class _DataEntryPageState extends State<DataEntryPage> {
   // Text editing controllers
   final componentIDController = TextEditingController();
-  final componentTypeController = TextEditingController();
   final electricalSpecController = TextEditingController();
   final connectionPointsController = TextEditingController();
   final geoLocationController =
-  TextEditingController(); // Geolocation controller
+      TextEditingController(); // Geolocation controller
   final installationDateController = TextEditingController();
   final operationStatusController = TextEditingController();
   final derController = TextEditingController(); // Optional DER input
+
+  ComponentType selectedComponentType = ComponentType.transformers;
 
   @override
   void initState() {
@@ -31,7 +62,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var args =
-      ModalRoute.of(context)?.settings.arguments as Map<String, String?>?;
+          ModalRoute.of(context)?.settings.arguments as Map<String, String?>?;
       if (args != null && args['qr'] != null) {
         setState(() {
           componentIDController.text = args['qr']!;
@@ -67,7 +98,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
     Position position = await Geolocator.getCurrentPosition();
     setState(() {
       geoLocationController.text =
-      "${position.latitude}, ${position.longitude}";
+          "${position.latitude}, ${position.longitude}";
     });
   }
 
@@ -76,7 +107,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
     final url = Uri.parse('https://asugs-flask-backend.onrender.com/send-data');
     final body = jsonEncode({
       'component_id': componentIDController.text,
-      'component_type': componentTypeController.text,
+      'component_type': selectedComponentType?.name,
       'electrical_specifications': electricalSpecController.text,
       'connection_points': connectionPointsController.text,
       'geolocation': geoLocationController.text,
@@ -106,7 +137,8 @@ class _DataEntryPageState extends State<DataEntryPage> {
   Future<void> fetchDataByComponentId() async {
     // Get the component ID from the text field
     final componentId = componentIDController.text;
-    final url = Uri.parse('https://asugs-flask-backend.onrender.com/get-data/$componentId');
+    final url = Uri.parse(
+        'https://asugs-flask-backend.onrender.com/get-data/$componentId');
 
     try {
       final response = await http.get(url);
@@ -117,8 +149,12 @@ class _DataEntryPageState extends State<DataEntryPage> {
 
         // Populate the text fields with fetched data
         setState(() {
-          componentTypeController.text = data['component_type'] ?? '';
-          electricalSpecController.text = data['electrical_specifications'] ?? '';
+          selectedComponentType = ComponentType.values.firstWhere(
+            (e) => e.name == data['component_type'],
+            orElse: () => ComponentType.transformers,
+          );
+          electricalSpecController.text =
+              data['electrical_specifications'] ?? '';
           connectionPointsController.text = data['connection_points'] ?? '';
           geoLocationController.text = data['geolocation'] ?? '';
           installationDateController.text = data['installation_date'] ?? '';
@@ -140,7 +176,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
   @override
   Widget build(BuildContext context) {
     var args =
-    ModalRoute.of(context)!.settings.arguments as Map<String, String?>?;
+        ModalRoute.of(context)!.settings.arguments as Map<String, String?>?;
 
     return Scaffold(
       appBar: AppBar(
@@ -167,7 +203,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   ),
                   const SizedBox(height: 40),
                   // Component ID field
-                  _buildTextField(
+                  Input(
                     controller: componentIDController,
                     hintText: 'Component ID',
                     enabled: true,
@@ -175,28 +211,25 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   const SizedBox(height: 30),
 
                   // Component Type field
-                  _buildTextField(
-                    controller: componentTypeController,
-                    hintText: 'Component Type',
-                  ),
+                  _buildDropdownField(),
                   const SizedBox(height: 30),
 
                   // Electrical Specifications field
-                  _buildTextField(
+                  Input(
                     controller: electricalSpecController,
                     hintText: 'Electrical Specifications',
                   ),
                   const SizedBox(height: 30),
 
                   // Connection Points field
-                  _buildTextField(
+                  Input(
                     controller: connectionPointsController,
                     hintText: 'Connection Points',
                   ),
                   const SizedBox(height: 30),
 
                   // Geolocation field (read-only)
-                  _buildTextField(
+                  Input(
                     controller: geoLocationController,
                     hintText: 'Geo Location (Latitude, Longitude)',
                     enabled: true, // Read-only
@@ -208,18 +241,21 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   const SizedBox(height: 30),
 
                   // Operation Status field
-                  _buildTextField(
+                  Input(
                     controller: operationStatusController,
                     hintText: 'Operation Status (active/inactive/maintenance)',
                   ),
                   const SizedBox(height: 30),
 
                   // Optional DER field
-                  _buildTextField(
+                  Input(
                     controller: derController,
                     hintText: 'Distributed Energy Resource (Optional)',
                   ),
                   const SizedBox(height: 30),
+
+                  // component input types
+                  _componentInputWidget(),
 
                   // Send data button
                   _buildSendButton(),
@@ -239,28 +275,59 @@ class _DataEntryPageState extends State<DataEntryPage> {
     );
   }
 
-  // Custom TextField builder
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    bool enabled = true,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      enabled: enabled,
+  Widget _componentInputWidget() {
+    switch (selectedComponentType) {
+      case ComponentType.transformers:
+        return TransformersForm();
+      case ComponentType.capacitorBanks:
+        return CapacitorBanksForm();
+      case ComponentType.generator:
+        return GeneratorForm();
+      case ComponentType.load:
+        return LoadForm();
+      case ComponentType.reactor:
+        return ReactorForm();
+      case ComponentType.voltageRegulators:
+        return VoltageRegulatorsForm();
+      case ComponentType.switches:
+        return SwitchesForm();
+      case ComponentType.fuses:
+        return FusesForm();
+      case ComponentType.circuitBreakers:
+        return CircuitBreakerForm();
+      case ComponentType.energyMeters:
+        return EnergyMeterForm();
+      case ComponentType.storageDevices:
+        return StorageDevicesForm();
+      case ComponentType.inverters:
+        return InvertersForm();
+      case ComponentType.shuntElements:
+        return ShuntElementForm();
+      default:
+        return Container();
+    }
+  }
+
+  Widget _buildDropdownField() {
+    return DropdownButtonFormField<ComponentType>(
+      value: selectedComponentType,
+      hint: const Text('Component Type'),
+      items: ComponentType.values.map((ComponentType type) {
+        return DropdownMenuItem<ComponentType>(
+          value: type,
+          child: Text(type.name),
+        );
+      }).toList(),
+      onChanged: (ComponentType? value) {
+        setState(() {
+          if (value != null) {
+            selectedComponentType = value;
+          }
+        });
+      },
       decoration: InputDecoration(
-        hintText: hintText,
         filled: true,
-        fillColor: enabled
-            ? Colors.grey[100]
-            : Colors.grey[200], // Different color when disabled
-        hintStyle: TextStyle(
-          color: enabled
-              ? Colors.black45
-              : Colors.black26, // Lighter hint color when disabled
-        ),
+        fillColor: Colors.grey[100],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none, // No border by default
@@ -270,14 +337,6 @@ class _DataEntryPageState extends State<DataEntryPage> {
           borderSide: BorderSide(
               color: Colors.grey, width: 1.0), // Customize enabled border
         ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: Colors.grey, width: 1.0), // Customize disabled border
-        ),
-      ),
-      style: TextStyle(
-        color: Colors.black, // Text color stays black even when disabled
       ),
     );
   }
@@ -304,7 +363,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
         }
       },
       child: AbsorbPointer(
-        child: _buildTextField(
+        child: Input(
           controller: installationDateController,
           hintText: 'Installation Date (YYYY-MM-DD)',
           keyboardType: TextInputType.datetime, // Set keyboard type to date
@@ -333,6 +392,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
       ),
     );
   }
+
   Widget _buildFetchButton() {
     return ElevatedButton(
       onPressed: fetchDataByComponentId,
