@@ -1,5 +1,6 @@
 import 'package:asugs/constants.dart';
 import 'package:asugs/screens/data_entry.dart';
+import 'package:asugs/screens/data_entry_work_order.dart';
 import 'package:asugs/screens/forget_password.dart';
 import 'package:asugs/screens/home.dart';
 import 'package:asugs/screens/login.dart';
@@ -17,11 +18,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        StreamProvider<User?>(
-            create: (ctx) => AuthService().getAuth().userChanges(),
-            initialData: null)
-      ],
+      providers: [StreamProvider<User?>(create: (ctx) => AuthService().getAuth().userChanges(), initialData: null)],
       child: MaterialApp(
         title: 'Grid Scout',
         theme: ThemeData(
@@ -74,7 +71,8 @@ class App extends StatelessWidget {
           '/forget': (ctx) => const ForgotPasswordScreen(),
           '/': (ctx) => const HomeScreen(),
           '/qrcode': (ctx) => const QrCode(),
-          '/data_entry': (ctx) => const DataEntryPage()
+          '/data_entry': (ctx) => const DataEntryPage(),
+          '/data_entry_work_order': (ctx) => const WorkOrderDataEntryPage(),
         },
         // home: HomePage(),
       ),

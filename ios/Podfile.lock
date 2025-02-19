@@ -178,8 +178,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   Firebase: 98e6bf5278170668a7983e12971a66b2cd57fc8c
-  firebase_auth: 51b560599fa3d93f494f32b94583e00fb5190f58
-  firebase_core: 085320ddfaacb80d1a96eac3a87857afcc150db1
+  firebase_auth: 0c77e299a8f2d1c74d1b1f6b78b3d4d802c19f47
+  firebase_core: 2bedc3136ec7c7b8561c6123ed0239387b53f2af
   FirebaseAppCheckInterop: 7789a8adfb09e905ce02a76540b94b059029ea81
   FirebaseAuth: 2a198b8cdbbbd457f08d74df7040feb0a0e7777a
   FirebaseAuthInterop: c453b7ba7c49b88b2f519bb8d2e29edf7ada4a2a
@@ -187,8 +187,8 @@ SPEC CHECKSUMS:
   FirebaseCoreExtension: 30bb063476ef66cd46925243d64ad8b2c8ac3264
   FirebaseCoreInternal: ac26d09a70c730e497936430af4e60fb0c68ec4e
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  geolocator_apple: d981750b9f47dbdb02427e1476d9a04397beb8d9
-  google_sign_in_ios: 0ab078e60da6dfe23cbc55c83502b52bba1aad63
+  geolocator_apple: 6cbaf322953988e009e5ecb481f07efece75c450
+  google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: eff9e23ec1d90ea4157a1ee2e32a4f610c5b3318
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
@@ -200,9 +200,9 @@ SPEC CHECKSUMS:
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
   MLKitVision: 45e79d68845a2de77e2dd4d7f07947f0ed157b0e
-  mobile_scanner: 9e49b4f9cb21e71b887c098143031ed82eaac2c0
+  mobile_scanner: b12f392b96690fd15a4646daaebd38539de7e564
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 

@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class NavigationCard extends StatelessWidget {
-  const NavigationCard(
-      {super.key,
-      required this.title,
-      required this.svgPath,
-      required this.href});
+  const NavigationCard({super.key, required this.title, required this.svgPath, required this.href, this.onTap});
 
   final String title;
   final String svgPath;
   final String href;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +15,10 @@ class NavigationCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () {
-          Navigator.pushNamed(context, href);
-        },
+        onTap: onTap ??
+            () {
+              Navigator.pushNamed(context, href);
+            },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),

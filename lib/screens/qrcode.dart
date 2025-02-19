@@ -14,6 +14,24 @@ class _QrCodeState extends State<QrCode> {
   final MobileScannerController controller = MobileScannerController();
   bool isNavigating = false; // Add a flag to track navigation state
 
+  String onDetectNavigateTo = '/data_entry';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var args = ModalRoute.of(context)?.settings.arguments as Map<String, String?>?;
+      if (args != null && args['navigate_to'] != null) {
+        try {
+          onDetectNavigateTo = args['navigate_to']!;
+          setState(() {});
+        } catch (e) {
+          debugPrint("Error: $e");
+        }
+      }
+    });
+  }
+
   @override
   void dispose() {
     controller.dispose();
@@ -47,7 +65,7 @@ class _QrCodeState extends State<QrCode> {
                 });
                 String? res = barcode.barcodes.first.rawValue;
 
-                Navigator.pushReplacementNamed(context, '/data_entry', arguments: {
+                Navigator.pushReplacementNamed(context, onDetectNavigateTo, arguments: {
                   'qr': res,
                 }).then((_) {
                   // Reset the navigation flag when returning to QR screen

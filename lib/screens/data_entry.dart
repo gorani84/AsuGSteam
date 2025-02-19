@@ -78,8 +78,8 @@ class _DataEntryPageState extends State<DataEntryPage> {
 
           debugPrint("Name: $name");
           debugPrint("Component Type: $componentType");
-          selectedComponentType = ComponentType.values
-              .firstWhere((type) => type.name == componentTypeController.text.trim().toLowerCase());
+          selectedComponentType =
+              ComponentType.values.firstWhere((type) => type.name == componentTypeController.text.trim().toLowerCase());
           setState(() {});
         } catch (e) {
           debugPrint("Error: $e");
@@ -558,9 +558,20 @@ class _DataEntryPageState extends State<DataEntryPage> {
         ),
       ),
       child: isFetching // Show loading indicator while fetching
-          ? Row(children: [CircularProgressIndicator(
-        color: Colors.white,
-      ), Text("Scouting... ")],)
+          ? Row(
+              children: [
+                CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Scouting... ",
+                  style: TextStyle(fontSize: 12, color: Colors.white),
+                )
+              ],
+            )
           : const Text(
               'Get Data',
               style: TextStyle(
