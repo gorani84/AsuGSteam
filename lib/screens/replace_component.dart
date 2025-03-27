@@ -88,19 +88,21 @@ class _FloatingLabelTextFieldState extends State<FloatingLabelTextField> {
 }
 
 
-class DataEntryPage extends StatefulWidget {
-  const DataEntryPage({super.key});
+class ReplaceComponentPage extends StatefulWidget {
+  const ReplaceComponentPage({super.key});
 
   @override
-  State<DataEntryPage> createState() => _DataEntryPageState();
+  State<ReplaceComponentPage> createState() => _ReplaceComponentPageState();
 }
 
-class _DataEntryPageState extends State<DataEntryPage> {
+class _ReplaceComponentPageState extends State<ReplaceComponentPage> {
   // Text editing controllers
   final componentIDController = TextEditingController();
   final componentTypeController = TextEditingController();
   final geoLocationController = TextEditingController(); // Geolocation controller
   final installationDateController = TextEditingController();
+  final bus1Controller = TextEditingController();
+  final bus2Controller = TextEditingController();
 
   // Dynamic parameter controllers
   final Map<String, TextEditingController> parameterControllers = {};
@@ -108,18 +110,22 @@ class _DataEntryPageState extends State<DataEntryPage> {
   String selectedComponentType = '';
   List<String> parameterFields = [];
 
+  // Variables to hold Bus1 and Bus2
+  String bus1 = '';
+  String bus2 = '';
+
   // Define Parameter fields for each component type
   final Map<String, List<String>> componentParameters = {
     'Transformer' : [
-      'Name', // Component schematic name in openDSS
-      'Conn1', // connection type for winding 1
-      'Conn2', // connection type for winding 2
-      'Kv1', //kV rating for winding 1
-      'Kv2', // kV rating for winding 2
-      'Kva1', // kVA rating for winding 1
-      'Kva2', // kVA rating for winding 2
-      'R1',
-      'R2',
+      'Phases', 
+      'Windings',
+      'Xhl', 
+      'Conn1', 
+      'kV1',
+      'kVA1', 
+      'Conn2', 
+      'kV2',
+      'kVA2',
     ],
     //Add other component types here
     'Fuse' : [
@@ -146,6 +152,38 @@ class _DataEntryPageState extends State<DataEntryPage> {
     //Add more component types here like this until all component types needed are added in this dynamic parameter editor
   };
 
+ @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  
+  final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+  if (args != null) {
+    setState(() {
+      bus1 = args['Bus1'] ?? '';
+      bus2 = args['Bus2'] ?? '';
+
+      // Initialize controllers with values for bus1 and bus2
+      bus1Controller.text = bus1;
+      bus2Controller.text = bus2;
+      
+      // Update the dynamic fields if the component type is Reactor
+      final componentType = componentTypeController.text;
+      if (componentType == 'Reactor') {
+        parameterFields = componentParameters['Reactor'] ?? [];
+        parameterControllers.clear();
+        for (var field in parameterFields) {
+          parameterControllers[field] = TextEditingController();
+        }
+
+        // Pre-fill bus1 and bus2
+        parameterControllers['Bus1']?.text = bus1;
+        parameterControllers['Bus2']?.text = bus2;
+      }
+    });
+  }
+}
+
   @override
  void dispose() {
   componentTypeController.dispose();
@@ -161,8 +199,14 @@ void updateParameterFields(String componentType) {
     selectedComponentType = componentType;
     parameterFields = componentParameters[componentType] ?? [];
     parameterControllers.clear();
+
     for (var field in parameterFields) {
       parameterControllers[field] = TextEditingController();
+    }
+
+    if (componentType == 'Reactor') {
+      parameterControllers['Bus1']?.text = bus1;
+      parameterControllers['Bus2']?.text = bus2;
     }
   });
 }
@@ -309,7 +353,7 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                 children: [
                   const SizedBox(height: 16),
                   const Text(
-                    "Component Parameters",
+                    "Replace Component",
                     style: TextStyle(fontSize: 28, color: Colors.white),
                   ),
                   const SizedBox(height: 40),
@@ -322,13 +366,11 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                   const SizedBox(height: 30),
 
                   // Component ID field
-                  TextField(
+                   FloatingLabelTextField(
                     controller: componentIDController,
-                    decoration: InputDecoration(
                       labelText: 'Component ID',
-                      border: OutlineInputBorder(),
                   ),
-                  ),
+
                   const SizedBox(height: 30),
 
                   // Geolocation field 
@@ -362,7 +404,7 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                   const SizedBox(height: 30),
                   
                   // Send data button
-                  _buildSendButton(),
+                  _buildReplaceComponentButton(),
 
                   const SizedBox(height: 30),
 
@@ -459,7 +501,7 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
 
 
   // Custom Send Data Button
-  Widget _buildSendButton() {
+  Widget _buildReplaceComponentButton() {
     return ElevatedButton(
       onPressed: sendData,
       style: ElevatedButton.styleFrom(
@@ -470,7 +512,7 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
         ),
       ),
       child: const Text(
-        'Send Data',
+        'Replace Component',
         style: TextStyle(
           fontSize: 18,
           color: Colors.white,
@@ -526,7 +568,7 @@ Widget _buildFetchButton() {
       ),
     ),
     child: const Text(
-      'Get Data',
+      'Find Component Parameters',
       style: TextStyle(
         fontSize: 18,
         color: Colors.white,

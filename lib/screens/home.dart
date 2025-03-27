@@ -20,6 +20,7 @@ class _HomeScreen extends State<HomeScreen> {
 
     List<List<String>> navigation = [
       ["Scan QR Code", "assets/icons/qr_code.svg", '/qrcode'],
+      ["Work Order", "assets/icons/text_file.svg", '/work_order'],
       ["Manual Entry", "assets/icons/text_file.svg", '/data_entry'],
       ["Equipments", "assets/icons/cable.svg", '/'],
       ["Settings", "assets/icons/settings.svg", '/'],
