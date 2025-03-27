@@ -117,46 +117,51 @@ class _AddComponentPageState extends State<AddComponentPage> {
   // Define Parameter fields for each component type
   final Map<String, List<String>> componentParameters = {
     'Transformer' : [
-      'Name', // Component schematic name in openDSS
-      'Conn1', // connection type for winding 1
-      'Conn2', // connection type for winding 2
-      'Kv1', //kV rating for winding 1
-      'Kv2', // kV rating for winding 2
-      'Kva1', // kVA rating for winding 1
-      'Kva2', // kVA rating for winding 2
-      'R1',
-      'R2',
+      'Phases', 
+      'Windings',
+      'Xhl', 
+      'Conn1', 
+      'kV1',
+      'kVA1', 
+      'Conn2', 
+      'kV2',
+      'kVA2',
     ],
     //Add other component types here
     'Fuse' : [
-      'Name', // Component schematic name in openDSS
+      'Bus1',
       'Monitored Object',
-      'Monitored Terminal',
-      'Status',
+      'RatedCurrent',
     ],
     'Reactor' : [
-      'Name',
       'Bus1',
-      'Bus2',
       'Phases',
-      'R',
-      'X',
-    ],
-    'Capacitor Bank' : [
-      'Name',
-      'Bus1',
       'kV',
       'kVAR',
-      'Phases',
     ],
+    'Capacitor' : [
+      'Bus1',
+      'Phases',
+      'kVAR',
+      'kV',
+    ],
+    'Generator' : [
+      'Bus1',
+      'Phases',
+      'kV',
+      'kW',
+      'kvar',
+      'Model',
+    ]
     //Add more component types here like this until all component types needed are added in this dynamic parameter editor
   };
 
-@override
+ @override
 void didChangeDependencies() {
   super.didChangeDependencies();
   
-  final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+  final route = ModalRoute.of(context);
+  final args = route?.settings.arguments as Map<String, dynamic>;
 
   if (args != null) {
     setState(() {
@@ -169,16 +174,27 @@ void didChangeDependencies() {
       
       // Update the dynamic fields if the component type is Reactor
       final componentType = componentTypeController.text;
-      if (componentType == 'Reactor') {
-        parameterFields = componentParameters['Reactor'] ?? [];
+
+      // components that require bus 1 and bus 2 updates
+      final componentsWithBus = ['Reactor', 'Capacitor', 'Generator', 'Fuse'];
+      final transformerType = 'Transformer';
+
+      if (componentsWithBus.contains(componentType) || componentType == transformerType) {
+        parameterFields = componentParameters[componentType] ?? [];
         parameterControllers.clear();
+
         for (var field in parameterFields) {
           parameterControllers[field] = TextEditingController();
         }
 
-        // Pre-fill bus1 and bus2
-        parameterControllers['Bus1']?.text = bus1;
-        parameterControllers['Bus2']?.text = bus2;
+        // Assign values based on component type
+        if (componentType == transformerType) {
+          parameterControllers['Conn1']?.text = bus1;
+          parameterControllers['Conn2']?.text = bus2;
+        } else {
+          parameterControllers['Bus1']?.text = bus1;
+          parameterControllers['Bus2']?.text = bus2;
+        }
       }
     });
   }
