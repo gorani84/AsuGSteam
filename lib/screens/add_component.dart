@@ -104,6 +104,7 @@ class _AddComponentPageState extends State<AddComponentPage> {
   final installationDateController = TextEditingController();
   final bus1Controller = TextEditingController();
   final bus2Controller = TextEditingController();
+  final serialNumberController = TextEditingController();
 
   // Dynamic parameter controllers
   final Map<String, TextEditingController> parameterControllers = {};
@@ -213,6 +214,7 @@ void didChangeDependencies() {
       bus2 = args['Bus2'] ?? '';
       equipmentIDController.text = args['EquipmentID'] ?? '';
       componentIDController.text = args['SchematicID'] ?? '';
+      serialNumberController.text = args['SerialNumber'] ?? '';
 
       // Initialize controllers with values for bus1 and bus2
       bus1Controller.text = bus1;
@@ -310,6 +312,7 @@ void updateParameterFields(String componentType) {
         'component_id': componentIDController.text,
         'parameters': parameters,
         'geolocation': geoLocation,
+        'serial_number': serialNumberController.text,
       };
 
       final response = await http.post(
@@ -428,6 +431,14 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
 
                   // Installation Date field with Date Picker
                   _buildInstallationDateField(),
+                  const SizedBox(height: 30),
+
+                   // Serial Number field
+                  FloatingLabelTextField(
+                    controller: serialNumberController, 
+                      labelText: 'Serial Number'
+                  ),
+
                   const SizedBox(height: 30),
 
                   // Render dynamic parameter fields for selected component type

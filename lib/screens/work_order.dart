@@ -18,6 +18,7 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
   final circuitIDController = TextEditingController();
   final schematicIDController = TextEditingController();
   final equipmentIDController = TextEditingController();
+  final serialNumberController = TextEditingController();
 
   // Store API response data
   String? Bus1;
@@ -59,13 +60,13 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
         Navigator.pushNamed(
           context,
           '/replaceComponent',
-          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text},
+          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text, 'SerialNumber': serialNumberController.text},
         );
       } else if (action == "add_component") {
         Navigator.pushNamed(
           context,
           '/addComponent',
-          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text},
+          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text, 'SerialNumber': serialNumberController.text},
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -138,6 +139,14 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
                   FloatingLabelTextField(
                     controller: equipmentIDController, 
                       labelText: 'Equipment ID'
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Serial Number field
+                  FloatingLabelTextField(
+                    controller: serialNumberController, 
+                      labelText: 'Serial Number'
                   ),
 
                   const SizedBox(height: 30),
