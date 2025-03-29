@@ -48,6 +48,8 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
       setState(() {
         Bus1 = data['Bus_1']; // Make sure this matches the API response key
         Bus2 = data['Bus_2'];
+        schematicIDController.text = data['Schematic_ID'];
+        circuitIDController.text = data['Circuit_ID'].toString();
       });
 
       String action = data['action']; //"replace_component" or "add_component"
@@ -57,13 +59,13 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
         Navigator.pushNamed(
           context,
           '/replaceComponent',
-          arguments: {'Bus1': Bus1, 'Bus2': Bus2},
+          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text},
         );
       } else if (action == "add_component") {
         Navigator.pushNamed(
           context,
           '/addComponent',
-          arguments: {'Bus1': Bus1, 'Bus2': Bus2},
+          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text},
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

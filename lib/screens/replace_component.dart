@@ -115,6 +115,46 @@ class _ReplaceComponentPageState extends State<ReplaceComponentPage> {
   String bus1 = '';
   String bus2 = '';
 
+  //Check the first letter of the Equip ID and update component Type accordingly
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition(); // ask for geo location upon page opening
+
+    equipmentIDController.addListener(() {
+      String equipmentID = equipmentIDController.text;
+
+      if (equipmentID.isNotEmpty) {
+        String firstLetter = equipmentID[0].toUpperCase();
+        String componentType = '';
+
+        switch (firstLetter) {
+          case 'T':
+            componentType = 'Transformer';
+            break;
+          case 'C':
+            componentType = 'Capacitor';
+            break;
+          case 'R':
+            componentType = 'Reactor';
+            break;
+          case 'G':
+            componentType = 'Generator';
+            break;
+          default:
+            componentType = '';
+        }
+
+        if (componentType != componentTypeController.text){
+          setState(() {
+            componentTypeController.text = componentType;
+            updateParameterFields(componentType);
+          });
+        }
+      }
+    });
+  }  
+
   // Define Parameter fields for each component type
   final Map<String, List<String>> componentParameters = {
     'Transformer' : [
@@ -168,6 +208,8 @@ void didChangeDependencies() {
     setState(() {
       bus1 = args['Bus1'] ?? '';
       bus2 = args['Bus2'] ?? '';
+      equipmentIDController.text = args['EquipmentID'] ?? '';
+      componentIDController.text = args['SchematicID'] ?? '';
 
       // Initialize controllers with values for bus1 and bus2
       bus1Controller.text = bus1;
@@ -178,23 +220,16 @@ void didChangeDependencies() {
 
       // components that require bus 1 and bus 2 updates
       final componentsWithBus = ['Reactor', 'Capacitor', 'Generator', 'Fuse'];
-      final transformerType = 'Transformer';
+      
 
-      if (componentsWithBus.contains(componentType) || componentType == transformerType) {
+      if (componentsWithBus.contains(componentType)) {
         parameterFields = componentParameters[componentType] ?? [];
         parameterControllers.clear();
+        parameterControllers['Bus1']?.text = bus1;
+        parameterControllers['Bus2']?.text = bus2;
 
         for (var field in parameterFields) {
           parameterControllers[field] = TextEditingController();
-        }
-
-        // Assign values based on component type
-        if (componentType == transformerType) {
-          parameterControllers['Conn1']?.text = bus1;
-          parameterControllers['Conn2']?.text = bus2;
-        } else {
-          parameterControllers['Bus1']?.text = bus1;
-          parameterControllers['Bus2']?.text = bus2;
         }
       }
     });
@@ -221,34 +256,13 @@ void updateParameterFields(String componentType) {
       parameterControllers[field] = TextEditingController();
     }
 
-    if (componentType == 'Reactor') {
-      parameterControllers['Bus1']?.text = bus1;
-      parameterControllers['Bus2']?.text = bus2;
+    if (['Reactor', 'Transformer', 'Capacitor', 'Generator'].contains(componentType)) {
+  parameterControllers['Bus1']?.text = bus1;
+  parameterControllers['Bus2']?.text = bus2;
+  
     }
   });
 }
-
-  @override
-  void initState() {
-    super.initState();
-    _determinePosition(); // Get geolocation when the page loads
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      var args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, String?>?;
-      if (args != null && args['qr'] != null) {
-        setState(() {
-          componentIDController.text = args['qr']!;
-        });
-      }
-    });
-
-    // Add listener to the componentTypeController to update parameter fields
-    componentTypeController.addListener(() {
-      final componentType = componentTypeController.text;
-      updateParameterFields(componentType); // Update parameter fields when the text changes
-    });
-  }
 
   // Method to determine the current position
   Future<void> _determinePosition() async {

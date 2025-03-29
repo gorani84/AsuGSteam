@@ -111,9 +111,50 @@ class _AddComponentPageState extends State<AddComponentPage> {
   String selectedComponentType = '';
   List<String> parameterFields = [];
 
-   // Variables to hold Bus1 and Bus2
+  // Variables to hold Bus1 and Bus2
   String bus1 = '';
   String bus2 = '';
+
+  //Check the first letter of the Equip ID and update component Type accordingly
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition(); // ask for geo location upon page opening
+
+    equipmentIDController.addListener(() {
+      String equipmentID = equipmentIDController.text;
+
+      if (equipmentID.isNotEmpty) {
+        String firstLetter = equipmentID[0].toUpperCase();
+        String componentType = '';
+
+        switch (firstLetter) {
+          case 'T':
+            componentType = 'Transformer';
+            break;
+          case 'C':
+            componentType = 'Capacitor';
+            break;
+          case 'R':
+            componentType = 'Reactor';
+            break;
+          case 'G':
+            componentType = 'Generator';
+            break;
+          default:
+            componentType = '';
+        }
+
+        if (componentType != componentTypeController.text){
+          setState(() {
+            componentTypeController.text = componentType;
+            updateParameterFields(componentType);
+          });
+        }
+      }
+    });
+  }  
+
 
   // Define Parameter fields for each component type
   final Map<String, List<String>> componentParameters = {
@@ -170,6 +211,8 @@ void didChangeDependencies() {
     setState(() {
       bus1 = args['Bus1'] ?? '';
       bus2 = args['Bus2'] ?? '';
+      equipmentIDController.text = args['EquipmentID'] ?? '';
+      componentIDController.text = args['SchematicID'] ?? '';
 
       // Initialize controllers with values for bus1 and bus2
       bus1Controller.text = bus1;
@@ -179,7 +222,7 @@ void didChangeDependencies() {
       final componentType = componentTypeController.text;
 
       // components that require bus 1 and bus 2 updates
-      final componentsWithBus = ['Reactor', 'Capacitor', 'Generator', 'Fuse', 'Transformer'];
+      final componentsWithBus = ['Reactor', 'Capacitor', 'Generator', 'Fuse'];
       
 
       if (componentsWithBus.contains(componentType)) {
@@ -223,28 +266,6 @@ void updateParameterFields(String componentType) {
     }
   });
 }
-
-  @override
-  void initState() {
-    super.initState();
-    _determinePosition(); // Get geolocation when the page loads
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      var args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, String?>?;
-      if (args != null && args['qr'] != null) {
-        setState(() {
-          componentIDController.text = args['qr']!;
-        });
-      }
-    });
-
-    // Add listener to the componentTypeController to update parameter fields
-    componentTypeController.addListener(() {
-      final componentType = componentTypeController.text;
-      updateParameterFields(componentType); // Update parameter fields when the text changes
-    });
-  }
 
   // Method to determine the current position
   Future<void> _determinePosition() async {
