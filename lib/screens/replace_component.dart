@@ -416,13 +416,9 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                   const SizedBox(height: 30),
 
                   // Geolocation field 
-                  TextField(
+                  FloatingLabelTextField(
                     controller: geoLocationController,
-                    decoration: InputDecoration(
-                     labelText: 'Geo Location (Latitude, Longitude)', 
-                     border: OutlineInputBorder(),
-                    ),
-                    enabled: true, 
+                    labelText: 'Geo Location (Latitude, Longitude)', 
                   ),
                   const SizedBox(height: 30),
 
@@ -443,9 +439,9 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                   ...parameterFields.map((field) {
                     return Column(
                       children: [
-                        _buildTextField(
+                        FloatingLabelTextField(
                           controller: parameterControllers[field]!, 
-                          hintText: field,
+                          labelText: field,
                           ),
                           const SizedBox(height: 30), // Add spacing between dynamic fields
                       ],
@@ -467,49 +463,6 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // Custom TextField builder
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    bool enabled = true,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      enabled: enabled,
-      decoration: InputDecoration(
-        hintText: hintText,
-        filled: true,
-        fillColor: enabled
-            ? Colors.grey[100]
-            : Colors.grey[200], // Different color when disabled
-        hintStyle: TextStyle(
-          color: enabled
-              ? Colors.black45
-              : Colors.black26, // Lighter hint color when disabled
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none, // No border by default
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: Colors.grey, width: 1.0), // Customize enabled border
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: Colors.grey, width: 1.0), // Customize disabled border
-        ),
-      ),
-      style: TextStyle(
-        color: Colors.black, // Text color stays black even when disabled
       ),
     );
   }
@@ -536,19 +489,13 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
       }
     },
     child: AbsorbPointer(
-      child: TextField(
+      child: FloatingLabelTextField(
         controller: installationDateController,
-        decoration: InputDecoration(
-          labelText: 'Installation Date (YYYY-MM-DD)',
-          floatingLabelStyle: TextStyle(height: 0.8),
-          border: OutlineInputBorder(),
-        ),
+        labelText: 'Installation Date (YYYY-MM-DD)',
       ),
     ),
   );
 }
-
-
 
   // Custom Send Data Button
   Widget _buildReplaceComponentButton() {
