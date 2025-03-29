@@ -17,6 +17,7 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
   final workOrderIDController = TextEditingController();
   final circuitIDController = TextEditingController();
   final schematicIDController = TextEditingController();
+  final equipmentIDController = TextEditingController();
 
   // Store API response data
   String? Bus1;
@@ -129,6 +130,14 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
                     controller: schematicIDController,
                      labelText: 'Component Schematic ID',
                   ),
+                  const SizedBox(height: 30),
+
+                  // Equipment ID field
+                  FloatingLabelTextField(
+                    controller: equipmentIDController, 
+                      labelText: 'Equipment ID'
+                  ),
+
                   const SizedBox(height: 30),
 
                   _buildSearchButton()

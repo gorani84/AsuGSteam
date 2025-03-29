@@ -97,6 +97,7 @@ class ReplaceComponentPage extends StatefulWidget {
 
 class _ReplaceComponentPageState extends State<ReplaceComponentPage> {
   // Text editing controllers
+  final equipmentIDController = TextEditingController();
   final componentIDController = TextEditingController();
   final componentTypeController = TextEditingController();
   final geoLocationController = TextEditingController(); // Geolocation controller
@@ -385,6 +386,14 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                    FloatingLabelTextField(
                     controller: componentIDController,
                       labelText: 'Component ID',
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Equipment ID field
+                  FloatingLabelTextField(
+                    controller: equipmentIDController, 
+                      labelText: 'Equipment ID'
                   ),
 
                   const SizedBox(height: 30),

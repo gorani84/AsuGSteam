@@ -97,6 +97,7 @@ class AddComponentPage extends StatefulWidget {
 
 class _AddComponentPageState extends State<AddComponentPage> {
   // Text editing controllers
+  final equipmentIDController = TextEditingController();
   final componentIDController = TextEditingController();
   final componentTypeController = TextEditingController();
   final geoLocationController = TextEditingController(); // Geolocation controller
@@ -119,10 +120,12 @@ class _AddComponentPageState extends State<AddComponentPage> {
     'Transformer' : [
       'Phases', 
       'Windings',
-      'Xhl', 
+      'Xhl',
+      'Bus1', 
       'Conn1', 
       'kV1',
-      'kVA1', 
+      'kVA1',
+      'Bus2', 
       'Conn2', 
       'kV2',
       'kVA2',
@@ -176,24 +179,17 @@ void didChangeDependencies() {
       final componentType = componentTypeController.text;
 
       // components that require bus 1 and bus 2 updates
-      final componentsWithBus = ['Reactor', 'Capacitor', 'Generator', 'Fuse'];
-      final transformerType = 'Transformer';
+      final componentsWithBus = ['Reactor', 'Capacitor', 'Generator', 'Fuse', 'Transformer'];
+      
 
-      if (componentsWithBus.contains(componentType) || componentType == transformerType) {
+      if (componentsWithBus.contains(componentType)) {
         parameterFields = componentParameters[componentType] ?? [];
         parameterControllers.clear();
+        parameterControllers['Bus1']?.text = bus1;
+        parameterControllers['Bus2']?.text = bus2;
 
         for (var field in parameterFields) {
           parameterControllers[field] = TextEditingController();
-        }
-
-        // Assign values based on component type
-        if (componentType == transformerType) {
-          parameterControllers['Conn1']?.text = bus1;
-          parameterControllers['Conn2']?.text = bus2;
-        } else {
-          parameterControllers['Bus1']?.text = bus1;
-          parameterControllers['Bus2']?.text = bus2;
         }
       }
     });
@@ -220,9 +216,10 @@ void updateParameterFields(String componentType) {
       parameterControllers[field] = TextEditingController();
     }
 
-    if (componentType == 'Reactor') {
-      parameterControllers['Bus1']?.text = bus1;
-      parameterControllers['Bus2']?.text = bus2;
+    if (['Reactor', 'Transformer', 'Capacitor', 'Generator'].contains(componentType)) {
+  parameterControllers['Bus1']?.text = bus1;
+  parameterControllers['Bus2']?.text = bus2;
+  
     }
   });
 }
@@ -295,13 +292,13 @@ void updateParameterFields(String componentType) {
       };
 
       final response = await http.post(
-        Uri.parse('https://asugs-flask-backend.onrender.com/modify_component'),
+        Uri.parse('https://asugs-flask-backend.onrender.com/add_component'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(payload),
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Component updated successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Component added successfully!')));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
       }
@@ -387,6 +384,14 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                       labelText: 'Component ID',
                   ),
                   
+                  const SizedBox(height: 30),
+                  
+                  // Equipment ID field
+                  FloatingLabelTextField(
+                    controller: equipmentIDController, 
+                      labelText: 'Equipment ID'
+                  ),
+
                   const SizedBox(height: 30),
 
                   // Geolocation field 
