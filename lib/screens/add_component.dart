@@ -1,6 +1,7 @@
 import 'package:asugs/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
@@ -64,7 +65,15 @@ class _FloatingLabelTextFieldState extends State<FloatingLabelTextField> {
           controller: widget.controller,
           focusNode: _focusNode,
           textAlignVertical: TextAlignVertical.bottom,
+          keyboardType: TextInputType.multiline,
+          minLines: 1,
+          maxLines: null,
+          maxLength: widget.labelText == "Notes (Max 200 Characters)" ? 200 : null, // limit characters for notes field
+          inputFormatters: widget.labelText == "Notes (Max 200 Characters)"
+            ? [LengthLimitingTextInputFormatter(200)]
+            : [], //Apply limit only to notes field
           decoration: InputDecoration(
+            counterText: '',
             contentPadding: EdgeInsets.only(top: widget.controller.text.isEmpty ? 24 : 24, bottom: widget.controller.text.isEmpty ? 12 : 12, left: 12, right: 12),
             border: OutlineInputBorder(),
           ),
@@ -87,7 +96,6 @@ class _FloatingLabelTextFieldState extends State<FloatingLabelTextField> {
   }
 }
 
-
 class AddComponentPage extends StatefulWidget {
   const AddComponentPage({super.key});
 
@@ -105,6 +113,7 @@ class _AddComponentPageState extends State<AddComponentPage> {
   final bus1Controller = TextEditingController();
   final bus2Controller = TextEditingController();
   final serialNumberController = TextEditingController();
+  final notesController = TextEditingController();
 
   // Dynamic parameter controllers
   final Map<String, TextEditingController> parameterControllers = {};
@@ -248,6 +257,7 @@ void didChangeDependencies() {
   geoLocationController.dispose();
   installationDateController.dispose();
   parameterControllers.forEach((key, controller) => controller.dispose());
+  notesController.dispose();
   super.dispose();
  }
 
@@ -450,8 +460,17 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
                       ],
                     );
                   }).toList(),
-                  const SizedBox(height: 30),
-                  
+
+                  // Notes field
+                  Container(
+                    constraints: BoxConstraints(maxHeight: 200),
+                    child: FloatingLabelTextField(
+                      controller: notesController, 
+                      labelText: 'Notes (Max 200 Characters)'
+                    ),
+                  ),
+                    const SizedBox(height: 30),
+
                   // Send data button
                   _buildAddComponentButton(),
 
@@ -499,8 +518,6 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
     ),
   );
 }
-
-
 
   // Custom Send Data Button
   Widget _buildAddComponentButton() {
