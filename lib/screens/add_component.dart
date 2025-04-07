@@ -114,6 +114,7 @@ class _AddComponentPageState extends State<AddComponentPage> {
   final bus2Controller = TextEditingController();
   final serialNumberController = TextEditingController();
   final notesController = TextEditingController();
+  final workOrderController = TextEditingController();
 
   // Dynamic parameter controllers
   final Map<String, TextEditingController> parameterControllers = {};
@@ -124,6 +125,7 @@ class _AddComponentPageState extends State<AddComponentPage> {
   // Variables to hold Bus1 and Bus2
   String bus1 = '';
   String bus2 = '';
+  String workOrderID = '';
 
   //Check the first letter of the Equip ID and update component Type accordingly
   @override
@@ -224,10 +226,12 @@ void didChangeDependencies() {
       equipmentIDController.text = args['EquipmentID'] ?? '';
       componentIDController.text = args['SchematicID'] ?? '';
       serialNumberController.text = args['SerialNumber'] ?? '';
+      workOrderID = args['WorkOrderID'] ?? '';
 
       // Initialize controllers with values for bus1 and bus2
       bus1Controller.text = bus1;
       bus2Controller.text = bus2;
+      workOrderController.text = workOrderID;
       
       // Update the dynamic fields if the component type is Reactor
       final componentType = componentTypeController.text;
@@ -257,6 +261,7 @@ void didChangeDependencies() {
   geoLocationController.dispose();
   installationDateController.dispose();
   parameterControllers.forEach((key, controller) => controller.dispose());
+  workOrderController.dispose();
   notesController.dispose();
   super.dispose();
  }
@@ -315,16 +320,19 @@ void updateParameterFields(String componentType) {
     try {
       final parameters = parameterControllers.map((key, controller) => MapEntry(key, controller.text));
 
-      final geoLocation = geoLocationController.text.split(',').map((e) => double.tryParse(e.trim()) ?? 0.0).toList();
+      final workOrderId = int.tryParse(workOrderController.text) ?? 0;
 
       final payload = {
         'component_type': selectedComponentType,
         'component_id': componentIDController.text,
         'parameters': parameters,
-        'geolocation': geoLocation,
+        'geolocation': geoLocationController.text,
         'serial_number': serialNumberController.text,
+        'equipment_id': equipmentIDController.text,
+        'user_id': "Test_User",
+        'work_order_id': workOrderId,
+        'notes': notesController.text,
       };
-
       final response = await http.post(
         Uri.parse('https://asugs-flask-backend.onrender.com/add_component'),
         headers: {'Content-Type': 'application/json'},
@@ -542,23 +550,23 @@ Future<Map<String, dynamic>> fetchDataByComponentId(String componentId, String c
 Widget _buildFetchButton() {
   return ElevatedButton(
     onPressed: () async {
-      final componentId = componentIDController.text.trim();
+      final equipmentID = equipmentIDController.text.trim();
       final componentType = componentTypeController.text.trim();
 
-      if (componentId.isEmpty || componentType.isEmpty) {
+      if (equipmentID.isEmpty || componentType.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please enter Component ID and Type.")),
+          const SnackBar(content: Text("Please enter Equipment ID and Component Type.")),
         );
         return;
       }
 
       try {
         // Fetch data from the server
-        final data = await fetchDataByComponentId(componentId, componentType);
+        final data = await fetchDataByComponentId(equipmentID, componentType);
 
         if (data.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("No data found for the provided Component ID and Type.")),
+            const SnackBar(content: Text("No data found for the provided Equipment ID and Component Type.")),
           );
           return;
         }

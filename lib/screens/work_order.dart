@@ -60,13 +60,13 @@ class _WorkOrderPageState extends State<WorkOrderPage> {
         Navigator.pushNamed(
           context,
           '/replaceComponent',
-          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text, 'SerialNumber': serialNumberController.text},
+          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text, 'SerialNumber': serialNumberController.text, 'WorkOrderID': workOrderIDController.text},
         );
       } else if (action == "add_component") {
         Navigator.pushNamed(
           context,
           '/addComponent',
-          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text, 'SerialNumber': serialNumberController.text},
+          arguments: {'Bus1': Bus1, 'Bus2': Bus2, 'EquipmentID': equipmentIDController.text, 'SchematicID': schematicIDController.text, 'SerialNumber': serialNumberController.text, 'WorkOrderID': workOrderIDController.text},
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
