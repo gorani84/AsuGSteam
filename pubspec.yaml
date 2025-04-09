@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 name: gridscout
 description: "Grid Scout - Power Grid Asset Management"
+=======
+name: asugs
+description: "A new Flutter project."
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -43,7 +48,10 @@ dependencies:
   dropdown_button2: ^2.3.9
   mobile_scanner: ^6.0.1
   geolocator: ^13.0.1
+<<<<<<< HEAD
   flutter_launcher_icons: ^0.14.3
+=======
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +64,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+<<<<<<< HEAD
 flutter_launcher_icons:
   android: true
   ios: true
@@ -66,6 +75,8 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   background_color_ios: "#FFFFFF"
 
+=======
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -78,6 +89,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+<<<<<<< HEAD
     - assets/images/logo_maroon.png
     - assets/images/logo_white.png
     - assets/images/logo_gold.png
@@ -88,6 +100,10 @@ flutter:
     - assets/images/substation_background.jpg
     - assets/icons/
     - assets/app_icons/
+=======
+    - assets/images/
+    - assets/icons/
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,9 +1,28 @@
+<<<<<<< HEAD
 import 'package:gridscout/constants.dart';
+=======
+import 'package:asugs/components/electric_components/input/capacitor_banks.dart';
+import 'package:asugs/components/electric_components/input/circuitBreakers.dart';
+import 'package:asugs/components/electric_components/input/energyMeters.dart';
+import 'package:asugs/components/electric_components/input/fuses.dart';
+import 'package:asugs/components/electric_components/input/generator.dart';
+import 'package:asugs/components/electric_components/input/inverters.dart';
+import 'package:asugs/components/electric_components/input/load.dart';
+import 'package:asugs/components/electric_components/input/reactor.dart';
+import 'package:asugs/components/electric_components/input/shuntElements.dart';
+import 'package:asugs/components/electric_components/input/storageDevices.dart';
+import 'package:asugs/components/electric_components/input/switches.dart';
+import 'package:asugs/components/electric_components/input/transformers.dart';
+import 'package:asugs/components/electric_components/input/voltageRegulators.dart';
+import 'package:asugs/components/ui/input.dart';
+import 'package:asugs/constants.dart';
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+<<<<<<< HEAD
 import 'package:flutter/cupertino.dart';
 
 class FloatingLabelTextField extends StatefulWidget {
@@ -112,6 +131,23 @@ class _FloatingLabelTextFieldState extends State<FloatingLabelTextField> {
       ),
     );
   }
+=======
+
+enum ComponentType {
+  transformers,
+  capacitorBanks,
+  generator,
+  load,
+  reactor,
+  voltageRegulators,
+  switches,
+  fuses,
+  circuitBreakers,
+  energyMeters,
+  storageDevices,
+  inverters,
+  shuntElements
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 }
 
 class DataEntryPage extends StatefulWidget {
@@ -124,6 +160,7 @@ class DataEntryPage extends StatefulWidget {
 class _DataEntryPageState extends State<DataEntryPage> {
   // Text editing controllers
   final componentIDController = TextEditingController();
+<<<<<<< HEAD
   final componentTypeController = TextEditingController();
   final geoLocationController =
       TextEditingController(); // Geolocation controller
@@ -201,6 +238,17 @@ class _DataEntryPageState extends State<DataEntryPage> {
       }
     });
   }
+=======
+  final electricalSpecController = TextEditingController();
+  final connectionPointsController = TextEditingController();
+  final geoLocationController =
+      TextEditingController(); // Geolocation controller
+  final installationDateController = TextEditingController();
+  final operationStatusController = TextEditingController();
+  final derController = TextEditingController(); // Optional DER input
+
+  ComponentType selectedComponentType = ComponentType.transformers;
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 
   @override
   void initState() {
@@ -216,6 +264,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
         });
       }
     });
+<<<<<<< HEAD
 
     // Add listener to the componentTypeController to update parameter fields
     componentTypeController.addListener(() {
@@ -223,6 +272,8 @@ class _DataEntryPageState extends State<DataEntryPage> {
       updateParameterFields(
           componentType); // Update parameter fields when the text changes
     });
+=======
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
   }
 
   // Method to determine the current position
@@ -257,6 +308,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
   }
 
   // Send data method
+<<<<<<< HEAD
   Future<void> sendData() async {
     try {
       if (componentIDController.text.isEmpty) {
@@ -338,19 +390,57 @@ class _DataEntryPageState extends State<DataEntryPage> {
       print("Exception in sendData: $e");
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('An error occurred: $e')));
+=======
+  void sendData() async {
+    final url = Uri.parse('https://asugs-flask-backend.onrender.com/send-data');
+    final body = jsonEncode({
+      'component_id': componentIDController.text,
+      'component_type': selectedComponentType?.name,
+      'electrical_specifications': electricalSpecController.text,
+      'connection_points': connectionPointsController.text,
+      'geolocation': geoLocationController.text,
+      'installation_date': installationDateController.text,
+      'operation_status': operationStatusController.text,
+      'der': derController.text,
+    });
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 201) {
+        print('Data sent successfully!');
+      } else {
+        print('Failed to send data. Error: ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
     }
   }
 
   //get data from table by referencing component id
+<<<<<<< HEAD
   Future<Map<String, dynamic>> fetchDataByComponentId(
       String componentId, String componentType) async {
     final String baseUrl = "https://asugs-flask-backend.onrender.com/get_data";
     final Uri url =
         Uri.parse("$baseUrl/$componentId?component_type=$componentType");
+=======
+  Future<void> fetchDataByComponentId() async {
+    // Get the component ID from the text field
+    final componentId = componentIDController.text;
+    final url = Uri.parse(
+        'https://asugs-flask-backend.onrender.com/get-data/$componentId');
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 
     try {
       final response = await http.get(url);
 
+<<<<<<< HEAD
       print("Response status: ${response.statusCode}");
       print("Response body: ${response.body}");
 
@@ -371,6 +461,31 @@ class _DataEntryPageState extends State<DataEntryPage> {
     } catch (e) {
       print("Error: $e");
       throw Exception('An error occurred: $e');
+=======
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('Data fetched successfully: $data');
+
+        // Populate the text fields with fetched data
+        setState(() {
+          selectedComponentType = ComponentType.values.firstWhere(
+            (e) => e.name == data['component_type'],
+            orElse: () => ComponentType.transformers,
+          );
+          electricalSpecController.text =
+              data['electrical_specifications'] ?? '';
+          connectionPointsController.text = data['connection_points'] ?? '';
+          geoLocationController.text = data['geolocation'] ?? '';
+          installationDateController.text = data['installation_date'] ?? '';
+          operationStatusController.text = data['operation_status'] ?? '';
+          derController.text = data['der'] ?? '';
+        });
+      } else {
+        print('Failed to fetch data. Error: ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
     }
   }
 
@@ -403,6 +518,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
                 children: [
                   const SizedBox(height: 16),
                   const Text(
+<<<<<<< HEAD
                     "Component Parameters",
                     style: TextStyle(fontSize: 28, color: Colors.white),
                   ),
@@ -439,6 +555,43 @@ class _DataEntryPageState extends State<DataEntryPage> {
                       border: OutlineInputBorder(),
                     ),
                     enabled: true,
+=======
+                    "Add New Component",
+                    style: TextStyle(fontSize: 28, color: Colors.white),
+                  ),
+                  const SizedBox(height: 40),
+                  // Component ID field
+                  Input(
+                    controller: componentIDController,
+                    hintText: 'Component ID',
+                    enabled: true,
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Component Type field
+                  _buildDropdownField(),
+                  const SizedBox(height: 30),
+
+                  // Electrical Specifications field
+                  Input(
+                    controller: electricalSpecController,
+                    hintText: 'Electrical Specifications',
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Connection Points field
+                  Input(
+                    controller: connectionPointsController,
+                    hintText: 'Connection Points',
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Geolocation field (read-only)
+                  Input(
+                    controller: geoLocationController,
+                    hintText: 'Geo Location (Latitude, Longitude)',
+                    enabled: true, // Read-only
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
                   ),
                   const SizedBox(height: 30),
 
@@ -446,6 +599,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   _buildInstallationDateField(),
                   const SizedBox(height: 30),
 
+<<<<<<< HEAD
                   // Render dynamic parameter fields for selected component type
                   if (parameterFields.isNotEmpty)
                     ...parameterFields.map((field) {
@@ -462,6 +616,25 @@ class _DataEntryPageState extends State<DataEntryPage> {
                     }).toList(),
                   const SizedBox(height: 30),
 
+=======
+                  // Operation Status field
+                  Input(
+                    controller: operationStatusController,
+                    hintText: 'Operation Status (active/inactive/maintenance)',
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Optional DER field
+                  Input(
+                    controller: derController,
+                    hintText: 'Distributed Energy Resource (Optional)',
+                  ),
+                  const SizedBox(height: 30),
+
+                  // component input types
+                  _componentInputWidget(),
+
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
                   // Send data button
                   _buildSendButton(),
 
@@ -480,6 +653,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
     );
   }
 
+<<<<<<< HEAD
   // Custom TextField builder
   Widget _buildTextField({
     required TextEditingController controller,
@@ -502,6 +676,61 @@ class _DataEntryPageState extends State<DataEntryPage> {
               ? Colors.black45
               : Colors.black26, // Lighter hint color when disabled
         ),
+=======
+  Widget _componentInputWidget() {
+    switch (selectedComponentType) {
+      case ComponentType.transformers:
+        return TransformersForm();
+      case ComponentType.capacitorBanks:
+        return CapacitorBanksForm();
+      case ComponentType.generator:
+        return GeneratorForm();
+      case ComponentType.load:
+        return LoadForm();
+      case ComponentType.reactor:
+        return ReactorForm();
+      case ComponentType.voltageRegulators:
+        return VoltageRegulatorsForm();
+      case ComponentType.switches:
+        return SwitchesForm();
+      case ComponentType.fuses:
+        return FusesForm();
+      case ComponentType.circuitBreakers:
+        return CircuitBreakerForm();
+      case ComponentType.energyMeters:
+        return EnergyMeterForm();
+      case ComponentType.storageDevices:
+        return StorageDevicesForm();
+      case ComponentType.inverters:
+        return InvertersForm();
+      case ComponentType.shuntElements:
+        return ShuntElementForm();
+      default:
+        return Container();
+    }
+  }
+
+  Widget _buildDropdownField() {
+    return DropdownButtonFormField<ComponentType>(
+      value: selectedComponentType,
+      hint: const Text('Component Type'),
+      items: ComponentType.values.map((ComponentType type) {
+        return DropdownMenuItem<ComponentType>(
+          value: type,
+          child: Text(type.name),
+        );
+      }).toList(),
+      onChanged: (ComponentType? value) {
+        setState(() {
+          if (value != null) {
+            selectedComponentType = value;
+          }
+        });
+      },
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.grey[100],
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none, // No border by default
@@ -511,6 +740,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
           borderSide: BorderSide(
               color: Colors.grey, width: 1.0), // Customize enabled border
         ),
+<<<<<<< HEAD
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
@@ -519,6 +749,8 @@ class _DataEntryPageState extends State<DataEntryPage> {
       ),
       style: TextStyle(
         color: Colors.black, // Text color stays black even when disabled
+=======
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
       ),
     );
   }
@@ -530,6 +762,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
         DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
+<<<<<<< HEAD
           firstDate: DateTime(2000), // Earliest selectable date
           lastDate: DateTime(2100), // Latest selectable date
         );
@@ -542,10 +775,24 @@ class _DataEntryPageState extends State<DataEntryPage> {
           setState(() {
             installationDateController.text =
                 formattedDate; // Update the text field
+=======
+          firstDate: DateTime(2000), // Date picker starts from the year 2000
+          lastDate: DateTime(2100), // Date picker ends in the year 2100
+        );
+
+        if (pickedDate != null) {
+          // Format the selected date as MM-DD-YYYY
+          String formattedDate =
+              "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+          setState(() {
+            installationDateController.text =
+                formattedDate; // Set the selected date in the controller
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
           });
         }
       },
       child: AbsorbPointer(
+<<<<<<< HEAD
         child: TextField(
           controller: installationDateController,
           decoration: InputDecoration(
@@ -553,6 +800,12 @@ class _DataEntryPageState extends State<DataEntryPage> {
             floatingLabelStyle: TextStyle(height: 0.8),
             border: OutlineInputBorder(),
           ),
+=======
+        child: Input(
+          controller: installationDateController,
+          hintText: 'Installation Date (YYYY-MM-DD)',
+          keyboardType: TextInputType.datetime, // Set keyboard type to date
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
         ),
       ),
     );
@@ -581,6 +834,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
 
   Widget _buildFetchButton() {
     return ElevatedButton(
+<<<<<<< HEAD
       onPressed: () async {
         final componentId = componentIDController.text.trim();
         final componentType = componentTypeController.text.trim();
@@ -647,6 +901,9 @@ class _DataEntryPageState extends State<DataEntryPage> {
           );
         }
       },
+=======
+      onPressed: fetchDataByComponentId,
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
         backgroundColor: kSecondaryColor,
@@ -663,6 +920,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
       ),
     );
   }
+<<<<<<< HEAD
 
   // Show picker dialog that works well in Web
   void _showPicker(BuildContext context, List<String> items, String title,
@@ -700,4 +958,6 @@ class _DataEntryPageState extends State<DataEntryPage> {
       },
     );
   }
+=======
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 }

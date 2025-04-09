@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+<<<<<<< HEAD
 import 'package:gridscout/constants.dart';
 import 'package:gridscout/services/auth.dart';
+=======
+import 'package:asugs/constants.dart';
+import 'package:asugs/services/auth.dart';
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});

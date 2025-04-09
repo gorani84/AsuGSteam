@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import 'package:gridscout/services/auth.dart';
+=======
+import 'package:asugs/services/auth.dart';
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

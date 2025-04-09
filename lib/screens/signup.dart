@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import 'package:gridscout/constants.dart';
 import 'package:gridscout/services/auth.dart';
+=======
+import 'package:asugs/constants.dart';
+import 'package:asugs/services/auth.dart';
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -175,7 +180,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ),
                                   )
                                 : const Text(
+<<<<<<< HEAD
                                     'Create New Account',
+=======
+                                    'Sign Up',
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
                                     style: TextStyle(fontSize: 16),
                                   ),
                           ),

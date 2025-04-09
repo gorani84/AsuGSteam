@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:gridscout/constants.dart';
 import 'package:gridscout/screens/add_component.dart';
 import 'package:gridscout/screens/data_entry.dart';
@@ -10,6 +11,17 @@ import 'package:gridscout/screens/signup.dart';
 import 'package:gridscout/screens/splash.dart';
 import 'package:gridscout/screens/work_order.dart';
 import 'package:gridscout/services/auth.dart';
+=======
+import 'package:asugs/constants.dart';
+import 'package:asugs/screens/data_entry.dart';
+import 'package:asugs/screens/forget_password.dart';
+import 'package:asugs/screens/home.dart';
+import 'package:asugs/screens/login.dart';
+import 'package:asugs/screens/qrcode.dart';
+import 'package:asugs/screens/signup.dart';
+import 'package:asugs/screens/splash.dart';
+import 'package:asugs/services/auth.dart';
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -57,18 +69,27 @@ class App extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(10), // Rounded border radius
             ),
+<<<<<<< HEAD
             floatingLabelBehavior: FloatingLabelBehavior.auto,
             floatingLabelStyle: const TextStyle(
               color: kPrimaryColor,
+=======
+            floatingLabelStyle: const TextStyle(
+              color: kSecondaryColor,
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
             ),
             floatingLabelAlignment: FloatingLabelAlignment.start,
             errorStyle: const TextStyle(
               color: kErrorColor,
+<<<<<<< HEAD
               fontSize: 14,
               height: 1.2,
             ),
             contentPadding:
                 EdgeInsets.only(top: 22, bottom: 12, left: 12, right: 12),
+=======
+            ),
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
           ),
           textTheme: const TextTheme(
             bodyLarge: TextStyle(color: Colors.black),
@@ -82,10 +103,14 @@ class App extends StatelessWidget {
           '/forget': (ctx) => const ForgotPasswordScreen(),
           '/': (ctx) => const HomeScreen(),
           '/qrcode': (ctx) => const QrCode(),
+<<<<<<< HEAD
           '/data_entry': (ctx) => const DataEntryPage(),
           '/work_order': (ctx) => const WorkOrderPage(),
           '/replaceComponent': (ctx) => const ReplaceComponentPage(),
           '/addComponent': (ctx) => const AddComponentPage()
+=======
+          '/data_entry': (ctx) => const DataEntryPage()
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
         },
         // home: HomePage(),
       ),

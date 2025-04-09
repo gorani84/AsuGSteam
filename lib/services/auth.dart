@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
+<<<<<<< HEAD
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthService {
@@ -10,6 +11,12 @@ class AuthService {
         ? '1051673137607-rvqvlvvjjqgkqvqtqvqtqvqtqvqtqvqt.apps.googleusercontent.com'
         : null,
   );
+=======
+
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 
   User? get getUser => _auth.currentUser;
   Stream<User?> get user => _auth.userChanges();
@@ -29,6 +36,7 @@ class AuthService {
   Future<User?> googleSignIn() async {
     try {
       GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+<<<<<<< HEAD
       if (googleSignInAccount == null) return null;
 
       GoogleSignInAuthentication googleAuth =
@@ -37,13 +45,31 @@ class AuthService {
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
+=======
+      GoogleSignInAuthentication? googleAuth =
+          await googleSignInAccount?.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken ?? "",
+        idToken: googleAuth?.idToken ?? "",
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
       );
 
       UserCredential result = await _auth.signInWithCredential(credential);
       print('Logged in User: ${result.user}');
+<<<<<<< HEAD
       return result.user;
     } catch (err) {
       print('Google Sign In Error: $err');
+=======
+
+      // TODO: send user credentials to our server
+      // await _updateUserData(result.user);
+
+      return result.user;
+    } catch (err) {
+      print(err);
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
       return null;
     }
   }
@@ -96,10 +122,19 @@ class AuthService {
 
   Future<void> signOut() async {
     try {
+<<<<<<< HEAD
       await _auth.signOut();
       await _googleSignIn.signOut();
     } catch (err) {
       print('Sign Out Error: $err');
+=======
+      // Sign out from Firebase authentication
+      await _auth.signOut();
+      // Sign out from Google if user was signed in with Google
+      await _googleSignIn.signOut();
+    } catch (err) {
+      print(err);
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
     }
   }
 }

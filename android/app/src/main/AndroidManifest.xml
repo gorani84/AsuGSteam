@@ -2,7 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"> 
 
     <application
+<<<<<<< HEAD
         android:label="GridScout"
+=======
+        android:label="asugs"
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!--  -->

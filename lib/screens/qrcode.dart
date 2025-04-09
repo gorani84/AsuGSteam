@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import 'package:gridscout/constants.dart';
+=======
+import 'package:asugs/constants.dart';
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -35,6 +39,10 @@ class _QrCodeState extends State<QrCode> {
       ),
       body: Stack(
         children: [
+<<<<<<< HEAD
+=======
+          // Camera view for scanning QR code
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
           MobileScanner(
             controller: controller,
             onDetect: (barcode) {
@@ -46,11 +54,22 @@ class _QrCodeState extends State<QrCode> {
                 });
                 String? res = barcode.barcodes.first.rawValue;
 
+<<<<<<< HEAD
                 Navigator.pushReplacementNamed(
                   context,
                   '/work_order',
                   arguments: {'qr': res},
                 );
+=======
+                Navigator.pushNamed(context, '/data_entry', arguments: {
+                  'qr': res,
+                }).then((_) {
+                  // Reset the navigation flag when returning to QR screen
+                  setState(() {
+                    isNavigating = false;
+                  });
+                });
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
               }
             },
           ),
@@ -65,6 +84,7 @@ class _QrCodeState extends State<QrCode> {
                 horizontal: 8.0,
               ),
               color: Colors.black.withOpacity(0.5),
+<<<<<<< HEAD
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -82,6 +102,14 @@ class _QrCodeState extends State<QrCode> {
                     textAlign: TextAlign.center,
                   ),
                 ],
+=======
+              child: Text(
+                result != null && result!.barcodes.isNotEmpty
+                    ? 'Scanned Data: ${result!.barcodes.first.rawValue}'
+                    : 'Scan a QR Code',
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                textAlign: TextAlign.center,
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
               ),
             ),
           ),

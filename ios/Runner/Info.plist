@@ -5,7 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+<<<<<<< HEAD
 	<string>GridScout</string>
+=======
+	<string>Asugs</string>
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +17,11 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
+<<<<<<< HEAD
 	<string>GridScout</string>
+=======
+	<string>asugs</string>
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,9 +53,20 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+<<<<<<< HEAD
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location to record where components are installed or serviced.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location to record where components are installed or serviced.</string>
+=======
+	<key>NSCameraUsageDescription</key>
+    <string>This app needs camera access to scan QR codes</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs photos access to get QR code from photo library</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need access to your location to populate the geo-location data.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need access to your location to provide accurate data at all times.</string>
+>>>>>>> 2eb82753615ad9020e69eb297e85e87fbb301350
 </dict>
 </plist>
