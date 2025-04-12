@@ -218,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushNamed(context, '/signup');
                       },
                       child: const Text(
-                        'Signup new account',
+                        'Create New Account',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),

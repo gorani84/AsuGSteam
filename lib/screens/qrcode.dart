@@ -47,7 +47,7 @@ class _QrCodeState extends State<QrCode> {
                 });
                 String? res = barcode.barcodes.first.rawValue;
 
-                Navigator.pushNamed(context, '/data_entry', arguments: {
+                Navigator.pushNamed(context, '/work_order', arguments: {
                   'qr': res,
                 }).then((_) {
                   // Reset the navigation flag when returning to QR screen

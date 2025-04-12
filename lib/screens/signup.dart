@@ -47,7 +47,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20), // Spacing between logo and text
                   // Text below the logo
                   Text(
-                    'Create Your Account!',
+                    'Create New Account',
                     style: GoogleFonts.bebasNeue(
                       fontSize: 28,
                       color: kSecondaryColor,
@@ -175,7 +175,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    'Sign Up',
+                                    'Create New Account',
                                     style: TextStyle(fontSize: 16),
                                   ),
                           ),
